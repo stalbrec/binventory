@@ -1,0 +1,18 @@
+{% load qr_code %}
+<h1>Box {{box.name}} </h1>
+{% qr_from_text full_url size="L" %}
+
+<table>
+    <tr>
+        <td>Item</td>
+        <td></td>
+    </tr>
+    {% for item in box.item_set.all %}
+    <tr>
+        <td> {{item.name}} </td>
+        <td></td>
+    </tr>
+    {%endfor%}
+</table>
+
+<a href="{% url 'inventory:index'%}">back</a>

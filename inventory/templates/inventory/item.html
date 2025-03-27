@@ -1,0 +1,35 @@
+<h1>{{item.name}}</h1>
+
+<table>
+    <tr>    
+        <td>ID</td>
+        <td>{{item.id}}</td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>{{item.name}}</td>
+    </tr>
+    <tr>
+        <td>
+            Box
+        </td>
+        <td>
+            {{item.box.name}}
+        </td>
+    </tr>
+
+</table>
+
+<br>
+
+<form method="POST">
+    {% csrf_token %}
+    <select name="new_box" required>
+        <option value="">Select Box</option>
+        {% for box in available_boxes%}
+            <option value="{{box.id}}">{{ box.name }}</option>
+        {%endfor%}
+    </select>
+    <button type="submit">Move Item...</button>
+</form>
+<a href="{% url 'inventory:index'%}">back</a>

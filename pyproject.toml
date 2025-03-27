@@ -5,6 +5,9 @@ description = "Your personal home inventory system! Label, scan QR codes, and ke
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "django-qr-code>=4.1.0",
     "django>=5.1.6",
     "psycopg>=3.2.4",
+    "psycopg-binary>=3.2.6",
+    "gunicorn>=23.0.0",
 ]
