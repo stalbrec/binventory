@@ -1,6 +1,8 @@
-<h1>{{item.name}}</h1>
+{% extends "inventory/base.html" %}
+{% block content %}
+<h1 class="text-2xl text-primary">{{item.name}}</h1>
 
-<table>
+<table class="table table-zebra">
     <tr>    
         <td>ID</td>
         <td>{{item.id}}</td>
@@ -24,12 +26,15 @@
 
 <form method="POST">
     {% csrf_token %}
-    <select name="new_box" required>
+    <select class="select select-sm" name="new_box" required>
         <option value="">Select Box</option>
         {% for box in available_boxes%}
             <option value="{{box.id}}">{{ box.name }}</option>
         {%endfor%}
     </select>
-    <button type="submit">Move Item...</button>
+    <button class="btn btn-sm" type="submit">Move Item...</button>
 </form>
-<a href="{% url 'inventory:index'%}">back</a>
+</br>
+<a class="btn btn-primary" href="{% url 'inventory:index'%}">back</a>
+
+{% endblock %}

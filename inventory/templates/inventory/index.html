@@ -1,53 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <meta name="viewport" content="width=device-width" />
-
-    <title>Unser kleines Inventar</title>
-
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" 
-          href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    
-    <!-- jQuery (required for DataTables) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable();
-            // new DataTable('#myTable', {responsive: true});
-        });
-    </script>
-</head>
-<body>
-
-    <h2>Unser kleines Inventar</h2>
-    <a href="{% url 'inventory:new'%}">+ New Item</a>
-    <table id="myTable" class="display">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Item</th>
-                <th>Box</th>
-                <th>Location</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in full_inventory %}
-            <tr>
-                <td>{{ item.id }}</td>
-                <td><a href="{% url 'inventory:item' item.id %}">{{ item.name }}</a></td>
-                <td><a href="{% url 'inventory:box' item.box.id %}">{{ item.box.name }}</a></td>
-                <td>{{ item.box.location }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-</body>
-</html>
+{% extends "inventory/base.html" %}
+{% block content %}
+<h2 class="text-xl text-primary">Unser kleines Inventar</h2>
+<a href="{% url 'inventory:new'%}"
+  ><button class="btn btn-neutral w-28 h-8 text-xs rounded-full">
+    + Add Item
+  </button></a
+>
+<div
+  class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 max-w-screen-xl mx-auto p-4 m-4"
+>
+  <table class="datatable table table-zebra table-xs table-pin-cols">
+    <!-- <table id="myTable" class="display"> -->
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Item</th>
+        <th>Box</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in full_inventory %}
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>
+          <a href="{% url 'inventory:item' item.id %}">{{ item.name }}</a>
+        </td>
+        <td>
+          <a href="{% url 'inventory:box' item.box.id %}"
+            >{{ item.box.name }}</a
+          >
+        </td>
+        <td>{{ item.box.location }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
