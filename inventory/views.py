@@ -3,9 +3,12 @@ from .models import Box, Item
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import qrcode
+import qrcode.image.svg
 import base64
 from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
 from openpyxl import Workbook
+
 # Create your views here.
 import logging
 
@@ -50,13 +53,44 @@ class BoxView(BoxAwareDetailView):
         full_url = self.request.build_absolute_uri(self.object.get_absolute_url())
         context["full_url"] = full_url
 
-        qr = qrcode.make(full_url)
-        buffer = BytesIO()
-        qr.save(buffer, format="PNG")
+        buffer = get_qr_code_buffer(full_url)
         img_str = base64.b64encode(buffer.getvalue())
-        context["qr_image_data"] = f"data:image/png;base64,{img_str.decode()}"
+        context["qr_image_data"] = f"data:image/svg+xml;base64,{img_str.decode()}"
         logging.error(img_str)
         return context
+
+
+def get_qr_code_buffer(full_url: str) -> BytesIO:
+    qr_buffer = BytesIO()
+    factory = qrcode.image.svg.SvgPathImage
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
+    qr.add_data(full_url)
+    qr_image = qr.make_image(
+        image_factory=factory,
+        module_drawer=qrcode.image.styles.moduledrawers.svg.SvgPathCircleDrawer(),
+    )
+    qr_image.save(qr_buffer)
+
+    return qr_buffer
+
+
+def download_all_box_qr_codes(request):
+    zip_buffer = BytesIO()
+    with ZipFile(zip_buffer, "a", ZIP_DEFLATED) as zip_file:
+        for box in Box.objects.order_by("id"):
+            box_full_url = request.build_absolute_uri(box.get_absolute_url())
+            zip_file.writestr(
+                f"{box.name}.svg", get_qr_code_buffer(box_full_url).getvalue()
+            )
+    zip_buffer.seek(0)
+
+    response = HttpResponse(
+        zip_buffer.read(),
+        content_type="application/zip",
+    )
+    downlaod_fname = "box_qr_codes.zip"
+    response["Content-Disposition"] = f'attachment; filename="{downlaod_fname}"'
+    return response
 
 
 def export_excel(request):
