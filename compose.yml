@@ -1,14 +1,21 @@
 services:
   postgres:
     image: postgres:latest
+    container_name: binventory-db
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - binventory-db:/var/lib/postgresql/data
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "echo", "$POSTGRES_DB","&&","pg_is_ready", "-d", "$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     networks:
       - binventory-net
     ports:
@@ -16,28 +23,30 @@ services:
 
   app:
     build: .
-    container_name: binventory
+    container_name: binventory-app
+    env_file: .env
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DEBUG: ${DEBUG}
+      DJANGO_DEBUG: ${DJANGO_DEBUG}
       DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       DATABASE_ENGINE: ${DATABASE_ENGINE}
       DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-  
+      DATABASE_USERNAME: ${DATABASE_USERNAME}  
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-    env_file:
-      - .env
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
     networks:
       - binventory-net
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 networks:
   binventory-net:
     driver: bridge
+
+volumes:
+  binventory-db:
