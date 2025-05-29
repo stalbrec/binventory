@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,11 +32,13 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", False)
 if isinstance(DEBUG, str):
-    DEBUG = DEBUG.lower()=="true"
-TAILWIND_DEV_MODE=DEBUG
+    DEBUG = DEBUG.lower() == "true"
+TAILWIND_DEV_MODE = DEBUG
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
-CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS","https://127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "DJANGO_CSRF_TRUSTED_ORIGINS", "https://127.0.0.1"
+).split(",")
 import logging
 
 logging.error("Allowed Hosts" + str(ALLOWED_HOSTS))
@@ -73,8 +76,8 @@ MIDDLEWARE = [
 ]
 if DEBUG:
     print("adding browser reload!")
-    INSTALLED_APPS+=["django_browser_reload"]
-    MIDDLEWARE+=["django_browser_reload.middleware.BrowserReloadMiddleware"]
+    INSTALLED_APPS += ["django_browser_reload"]
+    MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
 ROOT_URLCONF = "binventory.urls"
 
 TEMPLATES = [
@@ -103,7 +106,7 @@ WSGI_APPLICATION = "binventory.wsgi.application"
 DATABASES = {
     "default": {
         # "ENGINE": f"django.db.backends.{os.getenv("DATABASE_ENGINE","postgresql")}",
-        "ENGINE": f"django.db.backends.{os.getenv("DATABASE_ENGINE", "sqlite3")}",
+        "ENGINE": f"django.db.backends.{os.getenv('DATABASE_ENGINE', 'sqlite3')}",
         "NAME": os.getenv("DATABASE_NAME", "mydb"),
         "USER": os.getenv("DATABASE_USERNAME", "myuser"),
         "PASSWORD": os.getenv("DATABASE_PASSWORD", "mypassword"),

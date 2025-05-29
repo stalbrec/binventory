@@ -4,8 +4,10 @@ from django.shortcuts import render, redirect
 import qrcode
 import base64
 from io import BytesIO
+
 # Create your views here.
 import logging
+
 
 class IndexView(generic.ListView):
     template_name = "inventory/index.html"
@@ -44,10 +46,8 @@ class BoxView(BoxAwareDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        full_url = self.request.build_absolute_uri(
-            self.object.get_absolute_url()
-        )
-        context["full_url"]=full_url
+        full_url = self.request.build_absolute_uri(self.object.get_absolute_url())
+        context["full_url"] = full_url
 
         qr = qrcode.make(full_url)
         buffer = BytesIO()
