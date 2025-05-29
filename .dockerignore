@@ -1,0 +1,10 @@
+#tailwind
+**package-lock.json
+**/static/
+**/node_modules
+#generic
+**/staticfiles
+README.md
+.venv
+.env*
+*.yml
