@@ -1,10 +1,11 @@
 from django.views import generic
 from .models import Box, Item
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 import qrcode
 import base64
 from io import BytesIO
-
+from openpyxl import Workbook
 # Create your views here.
 import logging
 
@@ -56,6 +57,29 @@ class BoxView(BoxAwareDetailView):
         context["qr_image_data"] = f"data:image/png;base64,{img_str.decode()}"
         logging.error(img_str)
         return context
+
+
+def export_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Inventory"
+    columns = ["item-id", "item-name", "box-name", "box-location"]
+    ws.append(columns)
+
+    for item in Item.objects.order_by("id"):
+        ws.append([item.id, item.name, item.box.name, item.box.location])
+    xlsx_buffer = BytesIO()
+    wb.save(xlsx_buffer)
+
+    xlsx_buffer.seek(0)
+
+    response = HttpResponse(
+        xlsx_buffer.read(),
+        content_type="application/vnd.openxmlformats-officedocument.speadsheetml.sheet",
+    )
+    downlaod_fname = "inventory.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{downlaod_fname}"'
+    return response
 
 
 def new_item(request):
