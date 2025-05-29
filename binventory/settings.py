@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+# EMOJI_FAVICON="❤️"
+
 TAILWIND_APP_NAME = "theme"
 DAISYUI_LIGHT_THEME = "nord"
 DAISYUI_DARK_THEME = "dim"
@@ -88,6 +90,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "inventory.context_processors.theme_names",
+                "inventory.context_processors.emoji_favicon",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
