@@ -27,16 +27,23 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DJANGO_DEBUG", False))
+DEBUG = os.getenv("DJANGO_DEBUG", False)
+if isinstance(DEBUG, str):
+    DEBUG = DEBUG.lower()=="true"
+TAILWIND_DEV_MODE=DEBUG
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS","https://127.0.0.1").split(",")
+import logging
 
+logging.error("Allowed Hosts" + str(ALLOWED_HOSTS))
 
 # Application definition
 
 INSTALLED_APPS = [
     "inventory.apps.InventoryConfig",
-    "qr_code",
+    "tailwind",
+    "theme",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,6 +51,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+TAILWIND_APP_NAME = "theme"
+DAISYUI_LIGHT_THEME = "nord"
+DAISYUI_DARK_THEME = "dim"
+
+INTERNAL_IPS = ALLOWED_HOSTS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -54,7 +67,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
+if DEBUG:
+    print("adding browser reload!")
+    INSTALLED_APPS+=["django_browser_reload"]
+    MIDDLEWARE+=["django_browser_reload.middleware.BrowserReloadMiddleware"]
 ROOT_URLCONF = "binventory.urls"
 
 TEMPLATES = [
@@ -64,6 +80,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "inventory.context_processors.theme_names",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -82,12 +99,12 @@ WSGI_APPLICATION = "binventory.wsgi.application"
 DATABASES = {
     "default": {
         # "ENGINE": f"django.db.backends.{os.getenv("DATABASE_ENGINE","postgresql")}",
-        "ENGINE": f"django.db.backends.{os.getenv("DATABASE_ENGINE","sqlite3")}",
-        "NAME": os.getenv("DATABASE_NAME","mydb"),
-        "USER": os.getenv("DATABASE_USERNAME","myuser"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD","mypassword"),
-        "HOST": os.getenv("DATABASE_HOST","postgres"),
-        "PORT": os.getenv("DATABASE_PORT",5432),
+        "ENGINE": f"django.db.backends.{os.getenv("DATABASE_ENGINE", "sqlite3")}",
+        "NAME": os.getenv("DATABASE_NAME", "mydb"),
+        "USER": os.getenv("DATABASE_USERNAME", "myuser"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD", "mypassword"),
+        "HOST": os.getenv("DATABASE_HOST", "postgres"),
+        "PORT": os.getenv("DATABASE_PORT", 5432),
     }
 }
 

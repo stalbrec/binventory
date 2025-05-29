@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/**
+  * A catch-all path to Django template files, JavaScript, and Python files
+  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
+  *
+  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
+  * the scope of this path.
+  */
+@source "../../../**/*.{html,py,js}";
+@plugin "daisyui" {
+  themes: nord --default, dim --prefersdark;
+}
+
+/* DataTables DaisyUI overrides */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  @apply btn btn-sm mx-1;
+}
+.dataTables_wrapper .dataTables_info {
+  @apply text-sm text-base-content/70 my-2;
+}
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+  @apply label text-base-content font-semibold;
+}
+.dataTables_wrapper {
+  @apply bg-base-100 border-0 rounded-box p-1 shadow;
+}
