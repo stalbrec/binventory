@@ -18,17 +18,21 @@
   </div>
 </div>
 
-<table class="table table-zebra">
+<table class="datatable-small table table-zebra">
+  <thead>
   <tr>
+    <td>ID</td>
     <td>Item</td>
-    <td></td>
   </tr>
-  {% for item in box.item_set.all %}
+</thead>
+  <tbody>
+{% for item in box.item_set.all %}
   <tr>
+    <td>{{item.id}}</td>
     <td>{{item.name}}</td>
-    <td></td>
   </tr>
   {%endfor%}
+</tbody>
 </table>
 
 <a href="{% url 'inventory:index'%}" class="btn btn-primary">back</a>
