@@ -1,17 +1,44 @@
 from django.views import generic
 from .models import Box, Item
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import qrcode
 import qrcode.image.svg
 import base64
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
-from openpyxl import Workbook
-
+from openpyxl import Workbook, load_workbook
+from django import forms
 # Create your views here.
 import logging
 
+
+class ExcelImportForm(forms.Form):
+    # title = forms.CharField(max_length=50)
+    mode = forms.ChoiceField(choices=[("append","append"),("replace","replace")])
+    file = forms.FileField()
+
+def import_excel(request):
+    if request.method == "POST":
+        form = ExcelImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            buffer = BytesIO(request.FILES["file"].read())
+            wb = load_workbook(buffer)
+            ws = wb.active
+            import_mode = form.cleaned_data["mode"]
+            for irow in range(2, ws.max_row+1):
+                row = ws[irow]
+                item_id, item_name, box_name, box_location = row
+                box_query = Box.objects.filter(name=box_name.value)
+                if box_query.exists():
+                    box = box_query[0]
+                else:
+                    box = Box.objects.create(name=box_name.value, location=box_location.value)
+                Item.objects.create(name=item_name.value, box=box)
+        return redirect("inventory:index")
+    else:
+        form = ExcelImportForm()
+    return render(request, "inventory/import.html", {"form": form})
 
 class IndexView(generic.ListView):
     template_name = "inventory/index.html"
