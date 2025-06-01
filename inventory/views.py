@@ -2,8 +2,7 @@ from django.views import generic
 from .models import Box, Item
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-import qrcode
-import qrcode.image.svg
+from .utils import get_qr_code_buffer,generate_location_svg
 import base64
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -77,7 +76,25 @@ class ItemView(BoxAwareDetailView):
                 obj.box = new_box
             obj.save()
         return redirect("inventory:item", pk)
+    
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        svg_str = generate_location_svg(self.object.box.location,"Hobbyraum")
+        if svg_str == "":
+            svg_str=(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">'
+                '<rect width="100%" height="100%" rx="16" ry="16" fill="#f5f5f5" stroke="#ccc" stroke-width="2"/>'
+                '<path d="M40 130 L70 100 L100 130 L130 100 L160 130" stroke="#bbb" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<circle cx="60" cy="70" r="8" fill="#bbb"/>'
+                '<line x1="40" y1="40" x2="160" y2="160" stroke="#e0e0e0" stroke-width="3"/>'
+                '<line x1="160" y1="40" x2="40" y2="160" stroke="#e0e0e0" stroke-width="3"/>'
+                '</svg>'
+            )
+        img_base64 = base64.b64encode(svg_str.encode()).decode()
 
+        context["location_image_data"] = f"data:image/svg+xml;base64,{img_base64}"
+        logging.error(context["location_image_data"])
+        return context
 
 class BoxView(BoxAwareDetailView):
     model = Box
@@ -93,21 +110,6 @@ class BoxView(BoxAwareDetailView):
         context["qr_image_data"] = f"data:image/svg+xml;base64,{img_str.decode()}"
         logging.error(img_str)
         return context
-
-
-def get_qr_code_buffer(full_url: str) -> BytesIO:
-    qr_buffer = BytesIO()
-    factory = qrcode.image.svg.SvgPathImage
-    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
-    qr.add_data(full_url)
-    qr_image = qr.make_image(
-        image_factory=factory,
-        module_drawer=qrcode.image.styles.moduledrawers.svg.SvgPathCircleDrawer(),
-    )
-    qr_image.save(qr_buffer)
-
-    return qr_buffer
-
 
 def download_all_box_qr_codes(request):
     zip_buffer = BytesIO()
