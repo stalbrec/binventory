@@ -153,40 +153,37 @@ USE_TZ = True
 # logging.warning(f"base dir: {BASE_DIR}")
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS= [
-    BASE_DIR / "static"
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-
-PWA_APP_NAME = 'binventory'
+PWA_APP_NAME = "binventory"
 PWA_APP_DESCRIPTION = "Your personal home inventory system! Label, scan QR codes, and keep track of all your stored items effortlessly. Never lose anything again!"
-PWA_APP_THEME_COLOR = '#0A0302'
-PWA_APP_BACKGROUND_COLOR = '#ffffff'
-PWA_APP_DISPLAY = 'standalone'
-PWA_APP_SCOPE = '/'
-PWA_APP_ORIENTATION = 'any'
-PWA_APP_START_URL = '/'
-PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_THEME_COLOR = "#0A0302"
+PWA_APP_BACKGROUND_COLOR = "#ffffff"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_SCOPE = "/"
+PWA_APP_ORIENTATION = "any"
+PWA_APP_START_URL = "/"
+PWA_APP_STATUS_BAR_COLOR = "default"
 PWA_APP_ICONS = [
     {
-        'src':"/static/images/favicon.svg",
+        "src": "/static/images/favicon.svg",
         "type": "image/svg+xml",
         "sizes": "any",
-        "purpose": "any"
+        "purpose": "any",
     },
     {
-        'src': "/static/images/apple-touch-icon.png",
+        "src": "/static/images/apple-touch-icon.png",
         "type": "image/png",
         "sizes": "180x180",
-        "purpose": "any"
-    }
+        "purpose": "any",
+    },
 ]
 PWA_APP_ICONS_APPLE = PWA_APP_ICONS
-PWA_APP_DIR = 'ltr'
-PWA_APP_LANG = 'en-US'
-PWA_APP_DEBUG_MODE=DEBUG
+PWA_APP_DIR = "ltr"
+PWA_APP_LANG = "en-US"
+PWA_APP_DEBUG_MODE = DEBUG
