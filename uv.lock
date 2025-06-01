@@ -42,6 +42,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "cookiecutter" },
     { name = "django" },
+    { name = "django-pwa" },
     { name = "django-tailwind", extra = ["reload"] },
     { name = "gunicorn" },
     { name = "openpyxl" },
@@ -57,6 +58,7 @@ dependencies = [
 requires-dist = [
     { name = "cookiecutter", specifier = ">=2.6.0" },
     { name = "django", specifier = ">=5.1.6" },
+    { name = "django-pwa", specifier = ">=2.0.1" },
     { name = "django-tailwind", extras = ["reload"], specifier = ">=4.0.1" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "openpyxl", specifier = ">=3.1.5" },
@@ -186,6 +188,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3b/41/84eaa4f2b7f764e56e01c4ee49aa12bdea30ae50fd0d3ef7c2690b0c4ec2/django_browser_reload-1.18.0.tar.gz", hash = "sha256:c5f0b134723cbf2a0dc9ae1ee1d38e42db28fe23c74cdee613ba3ef286d04735", size = 14319 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e4/9d/1322dc4bce4982d1eadd3a62802c996ae0303aad13d9ad88c1d35025f73d/django_browser_reload-1.18.0-py3-none-any.whl", hash = "sha256:ed4cc2fb83c3bf6c30b54107a1a6736c0b896e62e4eba666d81005b9f2ecf6f8", size = 12230 },
+]
+
+[[package]]
+name = "django-pwa"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/39/5f/4a77504bb5edd693711ec2a396d47836f0a0b4d3f2fb9dc773f8b450c067/django_pwa-2.0.1.tar.gz", hash = "sha256:5539fabb41fe189cc2a82cb1f0f889b45671a8144d7b5bb5206a9ddd0fddb3c2", size = 448237 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/64/5ffd65b8e8e9d5563e863d868c259f69a1af79c878f6be469540c573347c/django_pwa-2.0.1-py3-none-any.whl", hash = "sha256:41dc931c645c6125c556bd753205ca051aa48e5d46edbf281003594f3d76d4a3", size = 453981 },
 ]
 
 [[package]]

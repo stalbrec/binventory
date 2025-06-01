@@ -16,13 +16,22 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.views.generic import RedirectView
 from django.urls import path, include
 import os
 
 debug = bool(os.environ.get("DJANGO_DEBUG", False))
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("",include('pwa.urls')),
     path("", include("inventory.urls")),
 ]
 if debug:
     urlpatterns += [path("__reload__/", include("django_browser_reload.urls"))]
+
+
+urlpatterns += [
+    path("apple-touch-icon.png", RedirectView.as_view(url="/static/images/apple-touch-icon.png")),
+    path("apple-touch-icon-precomposed.png", RedirectView.as_view(url="/static/images/apple-touch-icon.png")),
+    path("favicon.ico", RedirectView.as_view(url="/static/images/favicon.svg")),
+]
