@@ -1,6 +1,6 @@
 #tailwind
 **package-lock.json
-**/static/
+*/*/static/
 **/node_modules
 #generic
 **/staticfiles

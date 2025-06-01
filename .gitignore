@@ -4,5 +4,6 @@ __pycache__
 .DS_Store
 .env*
 staticfiles/
-**/static/
+*/*/static/
+*/static/
 mydb
