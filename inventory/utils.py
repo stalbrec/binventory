@@ -65,17 +65,23 @@ def generate_location_svg(location: str, prefix: str) -> str:
                 bx = x + (b - 1) * box_w + b * (shelf_w - box_w * 3) // 3
                 this_box_h = box_h if c > 1 else box_h // 2
                 by = ys[c] - this_box_h
-                stroke = (
+                color = (
                     "#E00909"
                     if (s == shelf and c == compartment and b == pos)
-                    else "#785624"
+                    else "#d0b080"
                 )
                 stroke_width = (
                     "4" if (s == shelf and c == compartment and b == pos) else "2"
                 )
 
+                # stroke: "#785624"
+                # fill: "#d0b080"
                 svg.append(
-                    f'<rect x="{bx}" y="{by}" width="{box_w - 4}" height="{this_box_h}" fill="#d0b080" stroke="{stroke}" stroke-width="{stroke_width}"/>'
+                    f'<rect x="{bx}" y="{by}" width="{box_w - 4}" height="{this_box_h}" fill="{color}" stroke="#785624" stroke-width="{stroke_width}"/>'
                 )
+                svg.append(
+                    f'<text x="{bx+(box_w-4)//2}" y="{by+this_box_h//2+5}" text-anchor="middle" font-size=".7em">{s}-{c}-{b}</text>'
+                )
+
     svg.append("</svg>")
     return "".join(svg)
