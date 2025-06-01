@@ -2,14 +2,10 @@ services:
   postgres:
     image: postgres:latest
     container_name: binventory-db
-    environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - binventory-db:/var/lib/postgresql/data
     env_file:
-      - .env
+      - .env.prod
     healthcheck:
       test: ["CMD-SHELL", "echo", "$POSTGRES_DB","&&","pg_is_ready", "-d", "$POSTGRES_DB"]
       interval: 5s
@@ -24,16 +20,8 @@ services:
   app:
     build: .
     container_name: binventory-app
-    env_file: .env
+    env_file: .env.prod
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_DEBUG: ${DJANGO_DEBUG}
-      DJANGO_LOGLEVEL: ${DJANGO_LOGLEVEL}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
-      DATABASE_ENGINE: ${DATABASE_ENGINE}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}  
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
     networks:
