@@ -12,4 +12,5 @@ urlpatterns = [
     path("qrcodes", views.download_all_box_qr_codes, name="qrcodes"),
     path("item/<int:pk>", views.ItemView.as_view(), name="item"),
     path("box/<int:pk>", views.BoxView.as_view(), name="box"),
+    path("login/", views.CustomLoginView.as_view(), name="login"),
 ]

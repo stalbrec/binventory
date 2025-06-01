@@ -1,0 +1,25 @@
+{% load pwa %}
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% progressive_web_app_meta %}
+        {% tailwind_css %}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+    </head>
+    <body>
+        <div class="flex items-center justify-center min-h-screen bg-base-200">
+        <div class="w-full max-w-md p-8 space-y-6 bg-base-100 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center text-primary">Login</h2>
+            <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="space-y-2">
+                {{ form.as_p|safe }}
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Login</button>
+            </form>
+        </div>
+        </div>
+    </body>
+</html>

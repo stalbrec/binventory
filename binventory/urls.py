@@ -16,6 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
 from django.urls import path, include
 import os
@@ -25,6 +26,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("",include('pwa.urls')),
     path("", include("inventory.urls")),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout")
 ]
 if debug:
     urlpatterns += [path("__reload__/", include("django_browser_reload.urls"))]

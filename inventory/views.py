@@ -8,10 +8,28 @@ from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
 from openpyxl import Workbook, load_workbook
 from django import forms
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
 import logging
+class CustomLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class':'input input-bordered w-full', 'placeholder':'Username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class':'input input-bordered w-full', 'placeholder':'Password'
+        })
+    )
 
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
+    template_name = "registration/login.html"
+    redirect_authenticated_user=True
+    next_page="/"
 
 class ExcelImportForm(forms.Form):
     # title = forms.CharField(max_length=50)
@@ -21,7 +39,7 @@ class ExcelImportForm(forms.Form):
         ])
     file = forms.FileField()
 
-
+@login_required
 def import_excel(request):
     if request.method == "POST":
         form = ExcelImportForm(request.POST, request.FILES)
@@ -46,8 +64,7 @@ def import_excel(request):
         form = ExcelImportForm()
     return render(request, "inventory/import.html", {"form": form})
 
-
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     template_name = "inventory/index.html"
     context_object_name = "full_inventory"
 
@@ -62,7 +79,7 @@ class BoxAwareDetailView(generic.DetailView):
         return context
 
 
-class ItemView(BoxAwareDetailView):
+class ItemView(LoginRequiredMixin, BoxAwareDetailView):
     model = Item
     template_name = "inventory/item.html"
 
@@ -96,7 +113,7 @@ class ItemView(BoxAwareDetailView):
         logging.error(context["location_image_data"])
         return context
 
-class BoxView(BoxAwareDetailView):
+class BoxView(LoginRequiredMixin, BoxAwareDetailView):
     model = Box
     template_name = "inventory/box.html"
 
@@ -111,6 +128,7 @@ class BoxView(BoxAwareDetailView):
         logging.error(img_str)
         return context
 
+@login_required
 def download_all_box_qr_codes(request):
     zip_buffer = BytesIO()
     with ZipFile(zip_buffer, "a", ZIP_DEFLATED) as zip_file:
@@ -130,6 +148,7 @@ def download_all_box_qr_codes(request):
     return response
 
 
+@login_required
 def export_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -153,6 +172,7 @@ def export_excel(request):
     return response
 
 
+@login_required
 def new_item(request):
     if request.method == "POST":
         item_name = request.POST.get("name")
