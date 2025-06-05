@@ -14,8 +14,6 @@ services:
       start_period: 5s
     networks:
       - binventory-net
-    ports:
-      - "5432:5432"
 
   app:
     build: .
