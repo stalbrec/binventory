@@ -10,6 +10,9 @@ class Box(models.Model):
 
     def get_absolute_url(self):
         return reverse("inventory:box", kwargs=dict(pk=self.pk))
+    
+    def __str__(self):
+        return f"{self.name} ({self.location})"
 
 
 class Item(models.Model):
@@ -18,3 +21,6 @@ class Item(models.Model):
 
     def location(self):
         return self.box.location
+    
+    def __str__(self):
+        return f"{self.name}"
