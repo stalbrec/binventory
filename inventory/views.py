@@ -175,7 +175,7 @@ def export_excel(request):
 def new_item(request):
     if request.method == "POST":
         item_name = request.POST.get("name")
-        box_id = request.POST.get("box")[0]
+        box_id = request.POST.get("box")
         Item.objects.create(name=item_name, box=Box.objects.get(id=box_id))
         return redirect("inventory:index")
     return render(
