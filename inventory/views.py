@@ -87,7 +87,7 @@ class ItemView(LoginRequiredMixin, BoxAwareDetailView):
         pk = kwargs.get("pk")
         if request.method == "POST":
             obj = self.model.objects.get(id=pk)
-            new_box_id = request.POST.get("new_box")[0]
+            new_box_id = request.POST.get("new_box")
             new_box = Box.objects.get(id=new_box_id)
             if new_box:
                 obj.box = new_box
@@ -110,7 +110,6 @@ class ItemView(LoginRequiredMixin, BoxAwareDetailView):
         img_base64 = base64.b64encode(svg_str.encode()).decode()
 
         context["location_image_data"] = f"data:image/svg+xml;base64,{img_base64}"
-        logging.error(context["location_image_data"])
         return context
 
 class BoxView(LoginRequiredMixin, BoxAwareDetailView):
