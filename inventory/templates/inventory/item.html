@@ -25,7 +25,9 @@
             Box
         </td>
         <td>
-            {{item.box.name}}
+            <a href="{{ item.box.get_absolute_url }}">
+                {{item.box.name}}
+            </a>
         </td>
     </tr>
 

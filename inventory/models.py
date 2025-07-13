@@ -10,7 +10,7 @@ class Box(models.Model):
 
     def get_absolute_url(self):
         return reverse("inventory:box", kwargs=dict(pk=self.pk))
-    
+
     def __str__(self):
         return f"{self.name} ({self.location})"
 
@@ -19,8 +19,11 @@ class Item(models.Model):
     name = models.CharField(max_length=200)
     box = models.ForeignKey(Box, on_delete=models.CASCADE)
 
+    def get_absolute_url(self):
+        return reverse("inventory:item", kwargs=dict(pk=self.pk))
+
     def location(self):
         return self.box.location
-    
+
     def __str__(self):
         return f"{self.name}"
