@@ -76,6 +76,10 @@ def generate_location_svg(location: str, prefix: str) -> str:
 
                 # stroke: "#785624"
                 # fill: "#d0b080"
+                if c==1:
+                    bx=bx+box_w//3*b
+                    if b==3:
+                        continue
                 svg.append(
                     f'<rect x="{bx}" y="{by}" width="{box_w - 4}" height="{this_box_h}" fill="{color}" stroke="#785624" stroke-width="{stroke_width}"/>'
                 )
