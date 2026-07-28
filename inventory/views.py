@@ -13,8 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 
-# Create your views here.
-import logging
+
 class CustomLoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class':'input input-bordered w-full', 'placeholder':'Username'})
@@ -124,7 +123,6 @@ class BoxView(LoginRequiredMixin, BoxAwareDetailView):
         buffer = get_qr_code_buffer(full_url)
         img_str = base64.b64encode(buffer.getvalue())
         context["qr_image_data"] = f"data:image/svg+xml;base64,{img_str.decode()}"
-        logging.error(img_str)
         return context
 
 @login_required
@@ -142,8 +140,8 @@ def download_all_box_qr_codes(request):
         zip_buffer.read(),
         content_type="application/zip",
     )
-    downlaod_fname = "box_qr_codes.zip"
-    response["Content-Disposition"] = f'attachment; filename="{downlaod_fname}"'
+    download_fname = "box_qr_codes.zip"
+    response["Content-Disposition"] = f'attachment; filename="{download_fname}"'
     return response
 
 
@@ -164,10 +162,10 @@ def export_excel(request):
 
     response = HttpResponse(
         xlsx_buffer.read(),
-        content_type="application/vnd.openxmlformats-officedocument.speadsheetml.sheet",
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    downlaod_fname = "inventory.xlsx"
-    response["Content-Disposition"] = f'attachment; filename="{downlaod_fname}"'
+    download_fname = "inventory.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{download_fname}"'
     return response
 
 
