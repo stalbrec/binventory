@@ -57,6 +57,15 @@
     <div
       class="my-15 mx-10 p-5 bg-base-100 rounded border-1 border-accent/10 shadow-2xl text-center"
     >
+      {% if messages %}
+      <div class="flex flex-col gap-2 mb-4">
+        {% for message in messages %}
+        <div role="alert" class="alert alert-{{ message.tags }}">
+          <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
       {% block content %} {% endblock %}
     </div>
     <script>

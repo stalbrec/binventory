@@ -7,7 +7,7 @@ services:
     env_file:
       - .env.prod
     healthcheck:
-      test: ["CMD-SHELL", "echo", "$POSTGRES_DB","&&","pg_is_ready", "-d", "$POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
       interval: 5s
       timeout: 5s
       retries: 5

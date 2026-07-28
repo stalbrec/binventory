@@ -1,12 +1,15 @@
 from django.views import generic
 from .models import Box, Item
-from django.shortcuts import render, redirect
+from .forms import ExcelImportForm, NewItemForm
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.contrib import messages
+from django.db import transaction
 from .utils import get_qr_code_buffer,generate_location_svg
 import base64
 from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,35 +34,34 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user=True
     next_page="/"
 
-class ExcelImportForm(forms.Form):
-    # title = forms.CharField(max_length=50)
-    mode = forms.ChoiceField(choices=[
-        ("append", "append"), 
-        # ("replace", "replace")
-        ])
-    file = forms.FileField()
-
 @login_required
 def import_excel(request):
     if request.method == "POST":
         form = ExcelImportForm(request.POST, request.FILES)
         if form.is_valid():
-            buffer = BytesIO(request.FILES["file"].read())
-            wb = load_workbook(buffer)
+            wb = form.cleaned_data["workbook"]
             ws = wb.active
             # import_mode = form.cleaned_data["mode"]
-            for irow in range(2, ws.max_row + 1):
-                row = ws[irow]
-                item_id, item_name, box_name, box_location = row
-                box_query = Box.objects.filter(name=box_name.value)
-                if box_query.exists():
-                    box = box_query[0]
-                else:
-                    box = Box.objects.create(
-                        name=box_name.value, location=box_location.value
-                    )
-                Item.objects.create(name=item_name.value, box=box)
-        return redirect("inventory:index")
+            try:
+                with transaction.atomic():
+                    for irow in range(2, ws.max_row + 1):
+                        row = ws[irow]
+                        item_id, item_name, box_name, box_location = row
+                        if not item_name.value or not box_name.value or not box_location.value:
+                            raise ValueError(f"row {irow} is missing required values")
+                        box_query = Box.objects.filter(name=box_name.value)
+                        if box_query.exists():
+                            box = box_query[0]
+                        else:
+                            box = Box.objects.create(
+                                name=box_name.value, location=box_location.value
+                            )
+                        Item.objects.create(name=item_name.value, box=box)
+            except (ValueError, TypeError) as exc:
+                messages.error(request, f"Import failed, no changes were made: {exc}")
+                return render(request, "inventory/import.html", {"form": form})
+            messages.success(request, "Inventory imported successfully.")
+            return redirect("inventory:index")
     else:
         form = ExcelImportForm()
     return render(request, "inventory/import.html", {"form": form})
@@ -85,12 +87,13 @@ class ItemView(LoginRequiredMixin, BoxAwareDetailView):
 
     def post(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
-        if request.method == "POST":
-            obj = self.model.objects.get(id=pk)
-            new_box_id = request.POST.get("new_box")
-            new_box = Box.objects.get(id=new_box_id)
-            if new_box:
-                obj.box = new_box
+        obj = get_object_or_404(self.model, id=pk)
+        new_box_id = request.POST.get("new_box")
+        new_box = Box.objects.filter(id=new_box_id).first()
+        if new_box is None:
+            messages.error(request, "Please select a valid box.")
+        else:
+            obj.box = new_box
             obj.save()
         return redirect("inventory:item", pk)
     
@@ -174,10 +177,13 @@ def export_excel(request):
 @login_required
 def new_item(request):
     if request.method == "POST":
-        item_name = request.POST.get("name")
-        box_id = request.POST.get("box")
-        Item.objects.create(name=item_name, box=Box.objects.get(id=box_id))
-        return redirect("inventory:index")
+        form = NewItemForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Item added.")
+            return redirect("inventory:index")
+    else:
+        form = NewItemForm()
     return render(
-        request, "inventory/new.html", dict(available_boxes=Box.objects.all())
+        request, "inventory/new.html", dict(form=form, available_boxes=Box.objects.all())
     )

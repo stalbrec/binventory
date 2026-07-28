@@ -1,8 +1,9 @@
-{% extends "inventory/base.html" %} 
+{% extends "inventory/base.html" %}
 {% block content %}
 <h2>New Item</h2>
 <form method="POST">
   {% csrf_token %}
+  {{ form.non_field_errors }}
   <input
     type="text"
     class="input input-primary"
@@ -10,12 +11,14 @@
     placehold="Item name"
     required
   />
+  {{ form.name.errors }}
   <select name="box" class="select select-primary" required>
     <option value="">Select Box</option>
     {% for box in available_boxes%}
     <option value="{{box.id}}">{{ box.name }}</option>
     {%endfor%}
   </select>
+  {{ form.box.errors }}
   <button type="submit" class="btn btn-sm btn-primary m-1">Add</button>
   <a class="btn btn-sm btn-error m-1" href="{% url 'inventory:index'%}"
     >Cancel</a
